@@ -1,4 +1,4 @@
-name: Transit Control APK Builder (Android 4 kompatibilis)
+name: Transit Control APK Builder (Android 4 kompatibilis, manuális SDK)
 
 on:
   workflow_dispatch:
@@ -27,16 +27,23 @@ jobs:
     - name: Install old Cordova
       run: npm install -g cordova@8.1.2
 
-    - name: Install Android SDK
-      uses: android-actions/setup-android@v3
+    - name: Install old Android SDK manually
+      run: |
+        wget https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip -O sdk-tools.zip
+        unzip sdk-tools.zip -d android-sdk
+        export ANDROID_HOME=$PWD/android-sdk
+        export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
+        yes | android-sdk/tools/bin/sdkmanager --licenses
+        android-sdk/tools/bin/sdkmanager "platform-tools" "platforms;android-19" "build-tools;28.0.3"
 
     - name: Create Transit Control Cordova Project
       run: |
+        export ANDROID_HOME=$PWD/android-sdk
+        export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
         cordova create transit-app com.transitcontrol.app "Transit Control"
         cp -r www/* transit-app/www/
         cd transit-app
         cordova platform add android@6.3.0
-        cordova requirements
         cordova build android --debug
 
     - name: Upload Debug APK
