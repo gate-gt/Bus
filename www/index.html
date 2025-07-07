@@ -1,88 +1,75 @@
-cat > www/index.html << 'EOF'
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Transit Control</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: Arial, sans-serif; 
-            background: #1a1a1a; 
-            color: white; 
-            overflow: hidden;
-            user-select: none;
-        }
-        .container { 
-            display: flex; 
-            height: 100vh; 
-            padding: 10px; 
-            gap: 10px;
-        }
-        .header { 
-            background: #333; 
-            padding: 15px; 
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .main-panel { 
-            flex: 1; 
-            background: #2a2a2a; 
-            border-radius: 8px; 
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-        .settings-panel { 
-            width: 300px; 
-            background: #333; 
-            border-radius: 8px; 
-            padding: 20px;
-        }
-        .route-info { 
-            background: #404040; 
-            padding: 15px; 
-            border-radius: 8px; 
-            margin: 10px 0;
-        }
-        .stop-item { 
-            background: #505050; 
-            padding: 12px; 
-            margin: 8px 0; 
-            border-radius: 6px;
-            border-left: 4px solid #00ff00;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BKK Transit Control</title>
+<style>
+    body {
+        background: #003399;
+        color: white;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
+    }
+    h1 {
+        font-size: 28px;
+    }
+    .info {
+        font-size: 22px;
+        margin: 15px 0;
+    }
+    .btn {
+        background: #ffaa00;
+        color: black;
+        padding: 15px 25px;
+        margin: 10px;
+        border: none;
+        border-radius: 6px;
+        font-size: 18px;
+    }
+    input {
+        padding: 10px;
+        font-size: 18px;
+        width: 80%;
+        margin: 10px 0;
+    }
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="main-panel">
-            <div class="header">
-                <h1>Transit Control</h1>
-                <button onclick="alert('Settings clicked')">⚙️</button>
-            </div>
-            <div class="route-info">
-                <h2>Route 42 - Downtown</h2>
-                <p>Estimated Time: 15 mins</p>
-            </div>
-            <div class="stop-item">Stop 1: Main Street</div>
-            <div class="stop-item">Stop 2: Central Park</div>
-            <div class="stop-item">Stop 3: Station Plaza</div>
-        </div>
-        <div class="settings-panel">
-            <h2>Settings</h2>
-            <label>
-                Bus Number:
-                <input type="text" placeholder="Enter bus number">
-            </label>
-            <br><br>
-            <button onclick="alert('Settings saved')">Save</button>
-        </div>
-    </div>
+
+<h1>BKK Transit Control</h1>
+
+<div class="info">
+    Idő: <span id="time">--:--</span><br>
+    Dátum: <span id="date">----</span><br>
+    Járatszám: <span id="route">42</span>
+</div>
+
+<input type="text" id="routeInput" placeholder="Járatszám módosítás">
+<button class="btn" onclick="updateRoute()">Mentés</button>
+
+<h2>Tevékenységek</h2>
+<button class="btn" onclick="alert('Megérkezés megállóba')">Megállóba érkeztem</button>
+<button class="btn" onclick="alert('Indulás')">Indulás</button>
+<button class="btn" onclick="alert('Technikai szünet')">Technikai szünet</button>
+
+<script>
+function updateRoute() {
+    const newRoute = document.getElementById('routeInput').value;
+    if (newRoute) {
+        document.getElementById('route').innerText = newRoute;
+    }
+}
+
+function updateTime() {
+    const now = new Date();
+    document.getElementById('time').innerText = now.toLocaleTimeString();
+    document.getElementById('date').innerText = now.toLocaleDateString();
+}
+setInterval(updateTime, 1000);
+updateTime();
+</script>
+
 </body>
 </html>
-EOF
