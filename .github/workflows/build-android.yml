@@ -1,4 +1,4 @@
-name: Standalone Transit Control APK Builder
+name: Transit Control APK Builder (Android 4 kompatibilis)
 
 on:
   workflow_dispatch:
@@ -9,58 +9,38 @@ jobs:
   build-apk:
     runs-on: ubuntu-latest
     steps:
-    
+
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup Java JDK
+    - name: Setup Java JDK 8
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '8'
         distribution: 'temurin'
 
-    - name: Setup Node.js
+    - name: Setup Node.js (Cordova 8 kompatibilis verzió)
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '14'
 
-    - name: Install Cordova
-      run: npm install -g cordova@latest
+    - name: Install old Cordova
+      run: npm install -g cordova@8.1.2
 
-    - name: Install Android SDK Tools
+    - name: Install Android SDK
       uses: android-actions/setup-android@v3
 
     - name: Create Transit Control Cordova Project
       run: |
         cordova create transit-app com.transitcontrol.app "Transit Control"
+        cp -r www/* transit-app/www/
         cd transit-app
-        cat > www/index.html << 'EOF'
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>Transit Control</title>
-            <style>
-                body { background: black; color: white; font-family: Arial; }
-            </style>
-        </head>
-        <body>
-            <h1>Transit Control</h1>
-            <p>Basic Cordova app</p>
-        </body>
-        </html>
-        EOF
-
-    - name: Build Android APK
-      run: |
-        cd transit-app
-        cordova platform add android
+        cordova platform add android@6.3.0
         cordova requirements
         cordova build android --debug
 
-    - name: Upload APK
+    - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       with:
-        name: TransitControl-APK
-        path: transit-app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+        name: TransitControl-Debug-APK
+        path: transit-app/platforms/android/build/outputs/apk/android-debug.apk
