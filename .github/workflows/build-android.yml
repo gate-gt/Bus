@@ -1,0 +1,41 @@
+name: Build Android APK
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    
+    - name: Install Cordova
+      run: npm install -g cordova@latest
+    
+    - name: Add Android Platform
+      run: |
+        cd mobile-app
+        cordova platform add android@latest
+    
+    - name: Build APK
+      run: |
+        cd mobile-app
+        cordova build android
+    
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: transit-control-apk
+        path: mobile-app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
