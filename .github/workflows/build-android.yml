@@ -1,4 +1,5 @@
 name: Standalone Transit Control APK Builder
+
 on:
   workflow_dispatch:
   push:
@@ -8,29 +9,31 @@ jobs:
   build-apk:
     runs-on: ubuntu-latest
     steps:
+    
     - name: Checkout code
       uses: actions/checkout@v4
-    
+
     - name: Setup Java JDK
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-    
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-    
+
     - name: Install Cordova
       run: npm install -g cordova@latest
-    
+
+    - name: Install Android SDK Tools
+      uses: android-actions/setup-android@v3
+
     - name: Create Transit Control Cordova Project
-      run: | 
-      cordova create transit-app com.transitcontrol.app "Transit Control"
+      run: |
+        cordova create transit-app com.transitcontrol.app "Transit Control"
         cd transit-app
-        
-        # Create the complete HTML app
         cat > www/index.html << 'EOF'
         <!DOCTYPE html>
         <html>
@@ -39,53 +42,25 @@ jobs:
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>Transit Control</title>
             <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { 
-                    font-family: Arial, sans-serif; 
-                    background: #1a1a1a; 
-                    color: white; 
-                    overflow: hidden;
-                    user-select: none;
-                }
-                .container { 
-                    display: flex; 
-                    height: 100vh; 
-                    padding: 10px; 
-                    gap: 10px;
-                }
-                .header { 
-                    background: #333; 
-                    padding: 15px; 
-                    border-radius: 8px;
-                    margin-bottom: 10px;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                }
-                .main-panel { 
-                    flex: 1; 
-                    background: #2a2a2a; 
-                    border-radius: 8px; 
-                    padding: 20px;
-                    display: flex;
-                    flex-direction: column;
-                }
-                .settings-panel { 
-                    width: 300px; 
-                    background: #333; 
-                    border-radius: 8px; 
-                    padding: 20px;
-                }
-                .route-info { 
-                    background: #404040; 
-                    padding: 15px; 
-                    border-radius: 8px; 
-                    margin: 10px 0;
-                }
-                .stop-item { 
-                    background: #505050; 
-                    padding: 12px; 
-                    margin: 8px 0; 
-                    border-radius: 6px;
-                    border-left: 4px solid #00ff00;
+                body { background: black; color: white; font-family: Arial; }
+            </style>
+        </head>
+        <body>
+            <h1>Transit Control</h1>
+            <p>Basic Cordova app</p>
+        </body>
+        </html>
+        EOF
 
+    - name: Build Android APK
+      run: |
+        cd transit-app
+        cordova platform add android
+        cordova requirements
+        cordova build android --debug
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: TransitControl-APK
+        path: transit-app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
