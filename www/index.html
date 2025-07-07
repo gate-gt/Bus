@@ -1,1 +1,88 @@
-
+cat > www/index.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Transit Control</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #1a1a1a; 
+            color: white; 
+            overflow: hidden;
+            user-select: none;
+        }
+        .container { 
+            display: flex; 
+            height: 100vh; 
+            padding: 10px; 
+            gap: 10px;
+        }
+        .header { 
+            background: #333; 
+            padding: 15px; 
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .main-panel { 
+            flex: 1; 
+            background: #2a2a2a; 
+            border-radius: 8px; 
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .settings-panel { 
+            width: 300px; 
+            background: #333; 
+            border-radius: 8px; 
+            padding: 20px;
+        }
+        .route-info { 
+            background: #404040; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin: 10px 0;
+        }
+        .stop-item { 
+            background: #505050; 
+            padding: 12px; 
+            margin: 8px 0; 
+            border-radius: 6px;
+            border-left: 4px solid #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-panel">
+            <div class="header">
+                <h1>Transit Control</h1>
+                <button onclick="alert('Settings clicked')">⚙️</button>
+            </div>
+            <div class="route-info">
+                <h2>Route 42 - Downtown</h2>
+                <p>Estimated Time: 15 mins</p>
+            </div>
+            <div class="stop-item">Stop 1: Main Street</div>
+            <div class="stop-item">Stop 2: Central Park</div>
+            <div class="stop-item">Stop 3: Station Plaza</div>
+        </div>
+        <div class="settings-panel">
+            <h2>Settings</h2>
+            <label>
+                Bus Number:
+                <input type="text" placeholder="Enter bus number">
+            </label>
+            <br><br>
+            <button onclick="alert('Settings saved')">Save</button>
+        </div>
+    </div>
+</body>
+</html>
+EOF
