@@ -1,0 +1,73 @@
+name: Standalone Transit Control Release APK Builder
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Cordova
+      run: npm install -g cordova@latest
+
+    - name: Install Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Create Transit Control Cordova Project
+      run: |
+        cordova create transit-app com.transitcontrol.app "Transit Control"
+        cd transit-app
+        cat > www/index.html << 'EOF'
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>Transit Control</title>
+            <style>
+                body { background: black; color: white; font-family: Arial; }
+            </style>
+        </head>
+        <body>
+            <h1>Transit Control</h1>
+            <p>Release Build</p>
+        </body>
+        </html>
+        EOF
+
+    - name: Copy signing configs
+      run: |
+        cd transit-app
+        mkdir -p platforms/android/app
+        echo "${{ secrets.KEY_PROPERTIES }}" > platforms/android/key.properties
+        echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > platforms/android/app/release.keystore
+
+    - name: Build signed APK
+      run: |
+        cd transit-app
+        cordova platform add android
+        cordova requirements
+        cordova build android --release
+
+    - name: Upload Release APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: TransitControl-Release-APK
+        path: transit-app/platforms/android/app/build/outputs/apk/release/app-release.apk
