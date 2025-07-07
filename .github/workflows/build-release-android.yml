@@ -1,4 +1,4 @@
-name: Standalone Transit Control Release APK Builder
+name: Standalone Transit Control APK Builder
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ jobs:
   build-apk:
     runs-on: ubuntu-latest
     steps:
-    
+
     - name: Checkout code
       uses: actions/checkout@v4
 
@@ -33,41 +33,14 @@ jobs:
     - name: Create Transit Control Cordova Project
       run: |
         cordova create transit-app com.transitcontrol.app "Transit Control"
-        cd transit-app
-        cat > www/index.html << 'EOF'
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>Transit Control</title>
-            <style>
-                body { background: black; color: white; font-family: Arial; }
-            </style>
-        </head>
-        <body>
-            <h1>Transit Control</h1>
-            <p>Release Build</p>
-        </body>
-        </html>
-        EOF
-
-    - name: Copy signing configs
-      run: |
-        cd transit-app
-        mkdir -p platforms/android/app
-        echo "${{ secrets.KEY_PROPERTIES }}" > platforms/android/key.properties
-        echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > platforms/android/app/release.keystore
-
-    - name: Build signed APK
-      run: |
+        cp -r www/* transit-app/www/
         cd transit-app
         cordova platform add android
         cordova requirements
-        cordova build android --release
+        cordova build android --debug
 
-    - name: Upload Release APK
+    - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       with:
-        name: TransitControl-Release-APK
-        path: transit-app/platforms/android/app/build/outputs/apk/release/app-release.apk
+        name: TransitControl-Debug-APK
+        path: transit-app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
